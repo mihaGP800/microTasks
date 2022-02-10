@@ -1,7 +1,7 @@
 import React from 'react';
 import TodoListHeader from "./TodoListHeader";
 import TasksList from "./TasksList";
-import AddTaskForm from "./AddTaskForm";
+import {AddTaskForm} from "./AddTaskForm";
 import ControlButtons from "./ControlButtons";
 import {FilterValuesType} from "./App";
 
