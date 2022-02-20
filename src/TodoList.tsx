@@ -1,60 +1,86 @@
-import React from 'react';
-import TodoListHeader from "./TodoListHeader";
-import TasksList from "./TasksList";
-import {AddTaskForm} from "./AddTaskForm";
-import ControlButtons from "./ControlButtons";
-import {FilterValuesType} from "./App";
+import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
+import {FilterValuesType} from './App';
+import * as stream from "stream";
+import {Button} from "./components/Button";
 
-type TodoListPropsType = {
-    title: string
-    tasks: Array<TaskType>
-    removeTask: (taskID: number) => void
-    changeFilter: (filter: FilterValuesType) => void
-}
-
-export type TaskType = {
-    id: number
+type TaskType = {
+    id: string
     title: string
     isDone: boolean
-
-
 }
 
-const TodoList = (props: TodoListPropsType) => {
-    return (
+type PropsType = {
+    title: string
+    tasks: Array<TaskType>
+    removeTask: (taskId: string) => void
+    changeFilter: (value: FilterValuesType) => void
+    addTask: (title: string) => void
+}
+
+export function Todolist(props: PropsType) {
+
+    let [title, setTitle] = useState("")
+
+    const addTask = () => {
+        props.addTask(title)
+        setTitle('')
+    }
+
+    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.currentTarget.value)
+    }
+
+    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.charCode === 13) {
+            addTask();
+        }
+    }
+    // const onAllClickHandler = () => {
+    //     props.changeFilter("all")
+    // }
+    //
+    // const onActiveClickHandler = () => {
+    //     props.changeFilter("active")
+    // }
+    //
+    // const onCompletedClickHandler = () => {
+    //     props.changeFilter("completed")
+    // }
+    const changeFilterHandler = (value: FilterValuesType) => {
+      props.changeFilter(value)
+    }
+
+    const onClickHandler = (tId: string) => props.removeTask(tId)
+
+    return <div>
+        <h3>{props.title}</h3>
         <div>
-            <TodoListHeader title={props.title}/>
-            <AddTaskForm/>
-            <TasksList tasks={props.tasks} removeTask={props.removeTask}
-                // changeFilter={props.changeFilter}
+            <input value={title}
+                   onChange={onChangeHandler}
+                   onKeyPress={onKeyPressHandler}
             />
-            <ControlButtons changeFilter={props.changeFilter}/>
-            {/*<div>*/}
-            {/*    <input/>*/}
-            {/*    <button>+</button>*/}
-            {/*</div>*/}
-            {/*<h3>{props.title}</h3>*/}
-            {/*<ul>*/}
-            {/*    <Task {...props.tasks[0]} />*/}
-            {/*    <Task {...props.tasks[1]} />*/}
-            {/*    <Task {...props.tasks[2]} />*/}
-            {/*<Task*/}
-            {/*    id={props.tasks[0].id}*/}
-            {/*    title={props.tasks[0].title}*/}
-            {/*    isDone={props.tasks[0].isDone}*/}
-            {/*/>*/}
-            {/*<li><input type="checkbox" checked={props.tasks[0].isDone}/> <span>{props.tasks[0].title}</span></li>*/}
-            {/*<li><input type="checkbox" checked={props.tasks[1].isDone}/> <span>{props.tasks[1].title}</span></li>*/}
-            {/*<li><input type="checkbox" checked={props.tasks[2].isDone}/> <span>{props.tasks[2].title}</span></li>*/}
-            {/*</ul>*/}
-            {/*<div>*/}
-            {/*    <button>All</button>*/}
-            {/*    <button>Active</button>*/}
-            {/*    <button>Completed</button>*/}
-            {/*</div>*/}
+            {/*<button onClick={addTask}>+</button>*/}
+            <Button name={'+'} callBack={addTask}/>
         </div>
-
-    );
-};
-
-export default TodoList;
+        <ul>
+            {
+                props.tasks.map(t => {
+                    return <li key={t.id}>
+                        <input type="checkbox" checked={t.isDone}/>
+                        <span>{t.title}</span>
+                        {/*<button onClick={()=>onClickHandler(t.id)}>x</button>*/}
+                        <Button name={'x'} callBack={()=>onClickHandler(t.id)}/>
+                    </li>
+                })
+            }
+        </ul>
+        <div>
+            {/*<button onClick={()=>changeFilterHandler('all')}>All</button>*/}
+            {/*<button onClick={()=>changeFilterHandler('active')}>Active</button>*/}
+            {/*<button onClick={()=>changeFilterHandler('completed')}>Completed</button>*/}
+            <Button name={'All'} callBack={()=>changeFilterHandler('all')}/>
+            <Button name={'Completed'} callBack={()=>changeFilterHandler('completed')}/>
+            <Button name={'Active'} callBack={()=>changeFilterHandler('active')}/>
+        </div>
+    </div>
+}
